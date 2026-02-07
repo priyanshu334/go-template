@@ -25,3 +25,20 @@ type DatabaseConfig struct {
 	Name     string `mapstructure:"name"`
 	SSLMode  string `mapstructure:"sslmode"`
 }
+
+func Load() *Config {
+	viper.SetConfigName("local")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("./config")
+
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("config error %v", err)
+	}
+	var cfg Config
+	if err := viper.Unmarshal(&cfg); err != nil {
+		log.Fatalf("config Unmarshal error:%v", err)
+	}
+	return &cfg
+}
